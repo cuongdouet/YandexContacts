@@ -14,57 +14,57 @@ import ru.yandex.practicum.contacts.presentation.sort.model.SortType;
 
 public class MainState {
 
-    private final SortType defaultSortType = SortType.BY_NAME;
-    private final Set<ContactType> defaultContactTypes = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(ContactType.values())));
+  private final SortType defaultSortType = SortType.BY_NAME;
+  private final Set<ContactType> defaultContactTypes = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(ContactType.values())));
 
-    private List<MergedContact> allContacts = Collections.emptyList();
-    private SortType sortType = defaultSortType;
-    private Set<ContactType> contactTypes = new HashSet<>(defaultContactTypes);
-    private String query = "";
+  private List<MergedContact> allContacts = Collections.emptyList();
+  private SortType sortType = defaultSortType;
+  private Set<ContactType> contactTypes = new HashSet<>(defaultContactTypes);
+  private String query = "";
 
-    @NonNull
-    public List<MergedContact> getAllContacts() {
-        return allContacts;
-    }
+  @NonNull
+  public List<MergedContact> getAllContacts() {
+    return allContacts;
+  }
 
-    public void setAllContacts(@NonNull List<MergedContact> allContacts) {
-        this.allContacts = allContacts;
-    }
+  public void setAllContacts(@NonNull List<MergedContact> allContacts) {
+    this.allContacts = allContacts;
+  }
 
-    @NonNull
-    public SortType getDefaultSortType() {
-        return defaultSortType;
-    }
+  @NonNull
+  public SortType getDefaultSortType() {
+    return defaultSortType;
+  }
 
-    @NonNull
-    public SortType getSortType() {
-        return sortType;
-    }
+  @NonNull
+  public SortType getSortType() {
+    return sortType;
+  }
 
-    public void setSortType(@NonNull SortType sortType) {
-        this.sortType = sortType;
-    }
+  public void setSortType(@NonNull SortType sortType) {
+    this.sortType = sortType;
+  }
 
-    @NonNull
-    public Set<ContactType> getDefaultContactTypes() {
-        return defaultContactTypes;
-    }
+  @NonNull
+  public Set<ContactType> getDefaultContactTypes() {
+    return defaultContactTypes;
+  }
 
-    @NonNull
-    public Set<ContactType> getContactTypes() {
-        return contactTypes;
-    }
+  @NonNull
+  public Set<ContactType> getContactTypes() {
+    return contactTypes;
+  }
 
-    public void setContactTypes(@NonNull Set<ContactType> contactTypes) {
-        this.contactTypes = contactTypes;
-    }
+  public void setContactTypes(@NonNull Set<ContactType> contactTypes) {
+    this.contactTypes = contactTypes;
+  }
 
-    @NonNull
-    public String getQuery() {
-        return query;
-    }
+  @NonNull
+  public String getQuery() {
+    return query;
+  }
 
-    public void setQuery(@NonNull String query) {
-        this.query = query;
-    }
+  public void setQuery(@NonNull String query) {
+    this.query = query;
+  }
 }

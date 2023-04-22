@@ -21,60 +21,58 @@ import ru.yandex.practicum.contacts.utils.android.ContextUtils;
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int ANIMATION_TIME = 250;
+  private static final int ANIMATION_TIME = 250;
+  private SplashActivityBinding binding;
+  private final ActivityResultLauncher<String> requestPermissionLauncher =
+    registerForActivityResult(new ActivityResultContracts.RequestPermission(), this::onPermissionResult);
 
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), this::onPermissionResult);
+  @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    binding = SplashActivityBinding.inflate(getLayoutInflater());
+    setContentView(binding.getRoot());
+    binding.settingsButton.setOnClickListener(view -> navigateToSettings());
 
-    private SplashActivityBinding binding;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = SplashActivityBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        binding.settingsButton.setOnClickListener(view -> navigateToSettings());
-
-        if (ContextUtils.hasContactPermissions(this)) {
-            navigateToMain();
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
-        }
+    if (ContextUtils.hasContactPermissions(this)) {
+      navigateToMain();
+    } else {
+      requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
     }
+  }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (ContextUtils.hasContactPermissions(this)) {
-            navigateToMain();
-        }
+  @Override
+  protected void onStart() {
+    super.onStart();
+    if (ContextUtils.hasContactPermissions(this)) {
+      navigateToMain();
     }
+  }
 
-    private void navigateToMain() {
-        final Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
+  private void navigateToMain() {
+    final Intent intent = new Intent(this, MainActivity.class);
+    startActivity(intent);
+    finish();
+  }
 
-    private void showSettings() {
-        final TransitionDrawable drawable = (TransitionDrawable) binding.getRoot().getBackground();
-        drawable.startTransition(ANIMATION_TIME);
-        binding.settingsButton.setVisibility(View.VISIBLE);
-        binding.logo.setVisibility(View.GONE);
-    }
+  private void showSettings() {
+    final TransitionDrawable drawable = (TransitionDrawable) binding.getRoot().getBackground();
+    drawable.startTransition(ANIMATION_TIME);
+    binding.settingsButton.setVisibility(View.VISIBLE);
+    binding.logo.setVisibility(View.GONE);
+  }
 
-    private void onPermissionResult(Boolean isGranted) {
-        if (isGranted) {
-            navigateToMain();
-        } else {
-            showSettings();
-        }
+  private void onPermissionResult(Boolean isGranted) {
+    if (isGranted) {
+      navigateToMain();
+    } else {
+      showSettings();
     }
+  }
 
-    private void navigateToSettings() {
-        final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        final Uri uri = Uri.fromParts("package", getPackageName(), null);
-        intent.setData(uri);
-        startActivity(intent);
-    }
+  private void navigateToSettings() {
+    final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    final Uri uri = Uri.fromParts("package", getPackageName(), null);
+    intent.setData(uri);
+    startActivity(intent);
+  }
 }

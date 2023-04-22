@@ -1,28 +1,28 @@
 <resources>
-    <string name="app_name">Contacts</string>
+  <string name="app_name">Contacts</string>
 
-    <string name="menu_sort">Sort</string>
-    <string name="menu_filter">Filter</string>
-    <string name="menu_search">Search</string>
+  <string name="menu_sort">Sort</string>
+  <string name="menu_filter">Filter</string>
+  <string name="menu_search">Search</string>
 
-    <string name="nothing_found">Nothing found</string>
-    <string name="go_to_settings">Go to settings</string>
+  <string name="nothing_found">Nothing found</string>
+  <string name="go_to_settings">Go to settings</string>
 
-    <string name="reset">Reset</string>
-    <string name="apply">Apply</string>
+  <string name="reset">Reset</string>
+  <string name="apply">Apply</string>
 
-    <string name="sort_by_name">By name (AZ / A-Z)</string>
-    <string name="sort_by_name_reversed">By name (Z-A / Z-A)</string>
-    <string name="sort_by_surname">By surname (A-Z / A-Z)</string>
-    <string name="sort_by_surname_reversed">By surname (Z-A / Z-A)</string>
+  <string name="sort_by_name">By name (AZ / A-Z)</string>
+  <string name="sort_by_name_reversed">By name (Z-A / Z-A)</string>
+  <string name="sort_by_surname">By surname (A-Z / A-Z)</string>
+  <string name="sort_by_surname_reversed">By surname (Z-A / Z-A)</string>
 
-    <string name="filter_contact_type_all">Select All</string>
-    <string name="filter_contact_type_telegram">Telegram</string>
-    <string name="filter_contact_type_whatsapp">WhatsApp</string>
-    <string name="filter_contact_type_viber">Viber</string>
-    <string name="filter_contact_type_signal">Signal</string>
-    <string name="filter_contact_type_threema">Threema</string>
-    <string name="filter_contact_type_phone">Phone number</string>
-    <string name="filter_contact_type_email">E-mail</string>
+  <string name="filter_contact_type_all">Select All</string>
+  <string name="filter_contact_type_telegram">Telegram</string>
+  <string name="filter_contact_type_whatsapp">WhatsApp</string>
+  <string name="filter_contact_type_viber">Viber</string>
+  <string name="filter_contact_type_signal">Signal</string>
+  <string name="filter_contact_type_threema">Threema</string>
+  <string name="filter_contact_type_phone">Phone number</string>
+  <string name="filter_contact_type_email">E-mail</string>
 
 </resources>

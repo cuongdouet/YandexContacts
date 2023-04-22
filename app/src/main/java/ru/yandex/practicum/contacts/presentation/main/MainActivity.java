@@ -26,8 +26,8 @@ import ru.yandex.practicum.contacts.R;
 import ru.yandex.practicum.contacts.databinding.ActivityMainBinding;
 import ru.yandex.practicum.contacts.model.ContactType;
 import ru.yandex.practicum.contacts.presentation.filter.FilterContactTypeDialogFragment;
-import ru.yandex.practicum.contacts.presentation.sort.SortDialogFragment;
 import ru.yandex.practicum.contacts.presentation.main.model.MenuClick;
+import ru.yandex.practicum.contacts.presentation.sort.SortDialogFragment;
 import ru.yandex.practicum.contacts.presentation.sort.model.SortType;
 import ru.yandex.practicum.contacts.ui.widget.DividerItemDecoration;
 import ru.yandex.practicum.contacts.utils.widget.EditTextUtils;
@@ -35,163 +35,161 @@ import ru.yandex.practicum.contacts.utils.widget.EditTextUtils;
 @SuppressLint("UnsafeExperimentalUsageError")
 public class MainActivity extends AppCompatActivity {
 
-    public static final String SORT_TAG = "SORT_TAG";
-    public static final String FILTER_TAG = "FILTER_TAG";
+  public static final String SORT_TAG = "SORT_TAG";
+  public static final String FILTER_TAG = "FILTER_TAG";
+  private final Map<Integer, BadgeDrawable> badges = new HashMap<>();
+  private ActivityMainBinding binding;
+  private MainViewModel viewModel;
+  private ContactAdapter adapter;
 
-    private ActivityMainBinding binding;
-    private MainViewModel viewModel;
-    private ContactAdapter adapter;
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-    private final Map<Integer, BadgeDrawable> badges = new HashMap<>();
+    binding = ActivityMainBinding.inflate(getLayoutInflater());
+    setContentView(binding.getRoot());
+    setSupportActionBar(binding.toolbar);
+    binding.toolbar.setTitleTextAppearance(this, R.style.Toolbar_Title);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    adapter = new ContactAdapter();
+    binding.recycler.setAdapter(adapter);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        setSupportActionBar(binding.toolbar);
-        binding.toolbar.setTitleTextAppearance(this, R.style.Toolbar_Title);
+    final DividerItemDecoration decoration = new DividerItemDecoration(this, R.drawable.item_decoration_72dp, DividerItemDecoration.VERTICAL);
+    binding.recycler.addItemDecoration(decoration);
 
-        adapter = new ContactAdapter();
-        binding.recycler.setAdapter(adapter);
+    viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+    viewModel.getContactsLiveDate().observe(this, this::updateContacts);
+    viewModel.getUiStateLiveDate().observe(this, this::updateUiState);
 
-        final DividerItemDecoration decoration = new DividerItemDecoration(this, R.drawable.item_decoration_72dp, DividerItemDecoration.VERTICAL);
-        binding.recycler.addItemDecoration(decoration);
+    createBadges();
+    EditTextUtils.addTextListener(binding.searchLayout.searchText, query -> viewModel.updateSearchText(query.toString()));
+    EditTextUtils.debounce(binding.searchLayout.searchText, query -> viewModel.search());
+    binding.searchLayout.resetButton.setOnClickListener(view -> clearSearch());
 
-        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        viewModel.getContactsLiveDate().observe(this, this::updateContacts);
-        viewModel.getUiStateLiveDate().observe(this, this::updateUiState);
+    getSupportFragmentManager().setFragmentResultListener(SortDialogFragment.REQUEST_KEY, this, (requestKey, result) -> {
+      final SortType newSortType = SortDialogFragment.from(result);
+      viewModel.updateSortType(newSortType);
+    });
 
-        createBadges();
-        EditTextUtils.addTextListener(binding.searchLayout.searchText, query -> viewModel.updateSearchText(query.toString()));
-        EditTextUtils.debounce(binding.searchLayout.searchText, query -> viewModel.search());
-        binding.searchLayout.resetButton.setOnClickListener(view -> clearSearch());
+    getSupportFragmentManager().setFragmentResultListener(FilterContactTypeDialogFragment.REQUEST_KEY, this, (requestKey, result) -> {
+      final Set<ContactType> newFilterContactTypes = FilterContactTypeDialogFragment.from(result);
+      viewModel.updateFilterContactTypes(newFilterContactTypes);
+    });
+  }
 
-        getSupportFragmentManager().setFragmentResultListener(SortDialogFragment.REQUEST_KEY, this, (requestKey, result) -> {
-            final SortType newSortType = SortDialogFragment.from(result);
-            viewModel.updateSortType(newSortType);
-        });
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu_main, menu);
+    attachBadges();
+    return true;
+  }
 
-        getSupportFragmentManager().setFragmentResultListener(FilterContactTypeDialogFragment.REQUEST_KEY, this, (requestKey, result) -> {
-            final Set<ContactType> newFilterContactTypes = FilterContactTypeDialogFragment.from(result);
-            viewModel.updateFilterContactTypes(newFilterContactTypes);
-        });
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();
+    if (id == R.id.menu_sort) {
+      viewModel.onMenuClick(MenuClick.SORT);
+      return true;
+    }
+    if (id == R.id.menu_filter) {
+      viewModel.onMenuClick(MenuClick.FILTER);
+      return true;
+    }
+    if (id == R.id.menu_search) {
+      viewModel.onMenuClick(MenuClick.SEARCH);
+      return true;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        attachBadges();
-        return true;
-    }
+    return super.onOptionsItemSelected(item);
+  }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.menu_sort) {
-            viewModel.onMenuClick(MenuClick.SORT);
-            return true;
-        }
-        if (id == R.id.menu_filter) {
-            viewModel.onMenuClick(MenuClick.FILTER);
-            return true;
-        }
-        if (id == R.id.menu_search) {
-            viewModel.onMenuClick(MenuClick.SEARCH);
-            return true;
-        }
+  private void showSortDialog(SortType sortType) {
+    SortDialogFragment.newInstance(sortType).show(getSupportFragmentManager(), SORT_TAG);
+  }
 
-        return super.onOptionsItemSelected(item);
-    }
+  private void showFilterContactTypeDialog(Set<ContactType> contactTypes) {
+    FilterContactTypeDialogFragment.newInstance(contactTypes).show(getSupportFragmentManager(), FILTER_TAG);
+  }
 
-    private void showSortDialog(SortType sortType) {
-        SortDialogFragment.newInstance(sortType).show(getSupportFragmentManager(), SORT_TAG);
-    }
+  @Override
+  public void onBackPressed() {
+    viewModel.onBackPressed();
+  }
 
-    private void showFilterContactTypeDialog(Set<ContactType> contactTypes) {
-        FilterContactTypeDialogFragment.newInstance(contactTypes).show(getSupportFragmentManager(), FILTER_TAG);
+  private void updateContacts(List<ContactUi> contacts) {
+    adapter.setItems(contacts, () -> binding.recycler.scrollToPosition(0));
+    if (contacts.size() > 0) {
+      binding.recycler.setVisibility(View.VISIBLE);
+      binding.nothingFound.setVisibility(View.GONE);
+    } else {
+      binding.recycler.setVisibility(View.GONE);
+      binding.nothingFound.setVisibility(View.VISIBLE);
     }
+  }
 
-    @Override
-    public void onBackPressed() {
-        viewModel.onBackPressed();
+  private void updateUiState(MainViewModel.UiState uiState) {
+    final Boolean finishActivity = uiState.actions.finishActivity.data;
+    if (finishActivity != null && finishActivity) {
+      finish();
+      return;
     }
+    binding.searchLayout.getRoot().setVisibility(uiState.searchVisibility ? View.VISIBLE : View.GONE);
+    binding.searchLayout.resetButton.setVisibility(uiState.resetSearchButtonVisibility ? View.VISIBLE : View.GONE);
+    if (uiState.actions.showSortTypeDialog.data != null) {
+      showSortDialog(uiState.actions.showSortTypeDialog.data);
+    }
+    final Set<ContactType> filterContactTypes = uiState.actions.showFilterContactTypeDialog.data;
+    if (filterContactTypes != null && filterContactTypes.size() > 0) {
+      showFilterContactTypeDialog(filterContactTypes);
+    }
+    updateBadges(uiState);
+  }
 
-    private void updateContacts(List<ContactUi> contacts) {
-        adapter.setItems(contacts, () -> binding.recycler.scrollToPosition(0));
-        if (contacts.size() > 0) {
-            binding.recycler.setVisibility(View.VISIBLE);
-            binding.nothingFound.setVisibility(View.GONE);
-        } else {
-            binding.recycler.setVisibility(View.GONE);
-            binding.nothingFound.setVisibility(View.VISIBLE);
-        }
-    }
+  private void updateBadges(MainViewModel.UiState uiState) {
+    updateBadge(uiState.menuBadges.sort, R.id.menu_sort);
+    updateBadge(uiState.menuBadges.filter, R.id.menu_filter);
+    updateBadge(uiState.menuBadges.search, R.id.menu_search);
+  }
 
-    private void updateUiState(MainViewModel.UiState uiState) {
-        final Boolean finishActivity = uiState.actions.finishActivity.data;
-        if (finishActivity != null && finishActivity) {
-            finish();
-            return;
-        }
-        binding.searchLayout.getRoot().setVisibility(uiState.searchVisibility ? View.VISIBLE : View.GONE);
-        binding.searchLayout.resetButton.setVisibility(uiState.resetSearchButtonVisibility ? View.VISIBLE : View.GONE);
-        if (uiState.actions.showSortTypeDialog.data != null) {
-            showSortDialog(uiState.actions.showSortTypeDialog.data);
-        }
-        final Set<ContactType> filterContactTypes = uiState.actions.showFilterContactTypeDialog.data;
-        if (filterContactTypes != null && filterContactTypes.size() > 0) {
-            showFilterContactTypeDialog(filterContactTypes);
-        }
-        updateBadges(uiState);
+  private void updateBadge(MainViewModel.UiState.MenuBadge badge, @IdRes int menuItemId) {
+    final BadgeDrawable drawable = Objects.requireNonNull(badges.get(menuItemId));
+    if (badge != null) {
+      drawable.setVisible(true);
+      if (badge.value > 0) {
+        drawable.setNumber(badge.value);
+      } else {
+        drawable.clearNumber();
+      }
+    } else {
+      drawable.setVisible(false);
     }
+  }
 
-    private void updateBadges(MainViewModel.UiState uiState) {
-        updateBadge(uiState.menuBadges.sort, R.id.menu_sort);
-        updateBadge(uiState.menuBadges.filter, R.id.menu_filter);
-        updateBadge(uiState.menuBadges.search, R.id.menu_search);
-    }
+  private void createBadges() {
+    badges.put(R.id.menu_sort, createBadge());
+    badges.put(R.id.menu_filter, createBadge());
+    badges.put(R.id.menu_search, createBadge());
+  }
 
-    private void updateBadge(MainViewModel.UiState.MenuBadge badge, @IdRes int menuItemId) {
-        final BadgeDrawable drawable = Objects.requireNonNull(badges.get(menuItemId));
-        if (badge != null) {
-            drawable.setVisible(true);
-            if (badge.value > 0) {
-                drawable.setNumber(badge.value);
-            } else {
-                drawable.clearNumber();
-            }
-        } else {
-            drawable.setVisible(false);
-        }
+  private void attachBadges() {
+    for (Map.Entry<Integer, BadgeDrawable> entry : badges.entrySet()) {
+      BadgeUtils.attachBadgeDrawable(entry.getValue(), binding.toolbar, entry.getKey());
     }
+  }
 
-    private void createBadges() {
-        badges.put(R.id.menu_sort, createBadge());
-        badges.put(R.id.menu_filter, createBadge());
-        badges.put(R.id.menu_search, createBadge());
-    }
+  private BadgeDrawable createBadge() {
+    final BadgeDrawable drawable = BadgeDrawable.create(this);
+    drawable.setBackgroundColor(ContextCompat.getColor(this, R.color.color_red));
+    drawable.setVisible(false);
+    return drawable;
+  }
 
-    private void attachBadges(){
-        for (Map.Entry<Integer, BadgeDrawable> entry : badges.entrySet()) {
-            BadgeUtils.attachBadgeDrawable(entry.getValue(), binding.toolbar, entry.getKey());
-        }
-    }
+  private void clearSearch() {
+    binding.searchLayout.searchText.setText("");
+    viewModel.search();
+  }
 
-    private BadgeDrawable createBadge() {
-        final BadgeDrawable drawable = BadgeDrawable.create(this);
-        drawable.setBackgroundColor(ContextCompat.getColor(this, R.color.color_red));
-        drawable.setVisible(false);
-        return drawable;
-    }
-
-    private void clearSearch() {
-        binding.searchLayout.searchText.setText("");
-        viewModel.search();
-    }
-
-    private void toast(@StringRes int res) {
-        Toast.makeText(this, res, Toast.LENGTH_SHORT).show();
-    }
+  private void toast(@StringRes int res) {
+    Toast.makeText(this, res, Toast.LENGTH_SHORT).show();
+  }
 }

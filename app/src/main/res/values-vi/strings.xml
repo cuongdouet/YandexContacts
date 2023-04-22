@@ -1,28 +1,28 @@
 <resources>
-    <string name="app_name">Danh bạ</string>
+  <string name="app_name">Danh bạ</string>
 
-    <string name="menu_sort">Sắp xếp</string>
-    <string name="menu_filter">Bộ lọc</string>
-    <string name="menu_search">Tìm kiếm</string>
+  <string name="menu_sort">Sắp xếp</string>
+  <string name="menu_filter">Bộ lọc</string>
+  <string name="menu_search">Tìm kiếm</string>
 
-    <string name="nothing_found">Không tìm thấy gì</string>
-    <string name="go_to_settings">Vào cài đặt</string>
+  <string name="nothing_found">Không tìm thấy gì</string>
+  <string name="go_to_settings">Vào cài đặt</string>
 
-    <string name="reset">Đặt lại</string>
-    <string name="apply">Áp dụng</string>
+  <string name="reset">Đặt lại</string>
+  <string name="apply">Áp dụng</string>
 
-    <string name="sort_by_name">Theo tên (AZ / A-Z)</string>
-    <string name="sort_by_name_reversed">Theo tên (Z-A / Z-A)</string>
-    <string name="sort_by_surname">Theo họ (A-Z / A-Z)</string>
-    <string name="sort_by_surname_reversed">Theo họ (Z-A / Z-A)</string>
+  <string name="sort_by_name">Theo tên (AZ / A-Z)</string>
+  <string name="sort_by_name_reversed">Theo tên (Z-A / Z-A)</string>
+  <string name="sort_by_surname">Theo họ (A-Z / A-Z)</string>
+  <string name="sort_by_surname_reversed">Theo họ (Z-A / Z-A)</string>
 
-    <string name="filter_contact_type_all">Chọn tất cả</string>
-    <string name="filter_contact_type_telegram">Điện báo</string>
-    <string name="filter_contact_type_whatsapp">WhatsApp</string>
-    <string name="filter_contact_type_viber">Viber</string>
-    <string name="filter_contact_type_signal">Tín hiệu</string>
-    <string name="filter_contact_type_threema">Người ba</string>
-    <string name="filter_contact_type_phone">Số điện thoại</string>
-    <string name="filter_contact_type_email">E-mail</string>
+  <string name="filter_contact_type_all">Chọn tất cả</string>
+  <string name="filter_contact_type_telegram">Điện báo</string>
+  <string name="filter_contact_type_whatsapp">WhatsApp</string>
+  <string name="filter_contact_type_viber">Viber</string>
+  <string name="filter_contact_type_signal">Tín hiệu</string>
+  <string name="filter_contact_type_threema">Người ba</string>
+  <string name="filter_contact_type_phone">Số điện thoại</string>
+  <string name="filter_contact_type_email">E-mail</string>
 
 </resources>
